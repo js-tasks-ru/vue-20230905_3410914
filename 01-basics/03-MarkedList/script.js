@@ -44,14 +44,14 @@ const App = defineComponent({
         if (email.email.includes(this.search) && this.search) {
           email.class = 'marked';
         } else {
-          email.class = ''
+          email.class = '';
         }
       }
-      return filtered
+      return filtered;
     }
   },
   mounted() {
-    let emailObjects = []
+    let emailObjects = [];
     for (let email of emails) {
       emailObjects.push({'email': email, 'class': ''})
     }

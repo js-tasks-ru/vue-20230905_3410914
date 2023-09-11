@@ -16,9 +16,8 @@
         <div class="form-group">
           <input type="search" v-model="search"/>
         </div>
-        <ul v-for="email in filteredEmails" v-if="filteredEmails">
-          <li :class="email.class">{{ email.email }}</li>
-<!--          <li class="marked">Email</li>-->
+        <ul>
+          <li v-for="email in filteredEmails" :class="email.class">{{ email.email }}</li>
         </ul>
       </div>
     </div>
