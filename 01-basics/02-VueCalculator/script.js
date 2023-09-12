@@ -14,29 +14,17 @@ const App = defineComponent({
       leftOperand: null,
       rightOperand: null,
       operandType: 'sum',
-      result: 0,
     }
   },
-  methods: {
-    calculate(event) {
+  computed: {
+    result() {
       if (this.leftOperand === null || this.rightOperand === null) {
-        return;
+        return 0;
       }
-      if (event) {
-        this.operandType = event.target.value;
-      }
-      let result = operations[this.operandType](this.leftOperand, this.rightOperand);
-      this.result = result === Infinity ? 'Cannot divide by zero' : result;
+      let r = operations[this.operandType](this.leftOperand, this.rightOperand);
+      return r === Infinity ? 'Cannot divide by zero' : r;
     }
-  },
-  watch: {
-    leftOperand() {
-      this.calculate();
-    },
-    rightOperand() {
-      this.calculate();
-    },
-  },
+  }
 });
 
 const app = createApp(App);

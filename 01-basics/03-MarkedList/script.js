@@ -40,20 +40,16 @@ const App = defineComponent({
   computed: {
     filteredEmails() {
       let filtered = [...this.emails];
-      for (let email of this.emails) {
-        if (email.email.includes(this.search) && this.search) {
-          email.class = 'marked';
-        } else {
-          email.class = '';
-        }
-      }
-      return filtered;
+      return filtered.map((email) => {
+        email.marked = email.email.includes(this.search) && this.search;
+        return email;
+      });
     }
   },
   mounted() {
     let emailObjects = [];
     for (let email of emails) {
-      emailObjects.push({'email': email, 'class': ''})
+      emailObjects.push({'email': email, 'marked': false});
     }
     this.emails = emailObjects;
   },
