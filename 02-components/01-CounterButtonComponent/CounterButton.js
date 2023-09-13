@@ -4,13 +4,12 @@ export default defineComponent({
   name: 'CounterButton',
   props: {
     count: {
-      options: {
-        type: Number,
-        required: true,
-      }
+      type: Number,
+      required: true,
+      default: 0
     },
   },
   emits: ['update:count'],
   template: `
-    <button type="button" @click="$emit('update:count')">{{ count }}</button>`,
+    <button type="button" @click="$emit('update:count', count += 1)">{{ count }}</button>`,
 });
