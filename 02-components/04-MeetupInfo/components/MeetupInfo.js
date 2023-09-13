@@ -18,24 +18,24 @@ export default defineComponent({
   },
   template: `
     <ul class="meetup-info">
-    <li>
-      <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-user.svg"/>
-      {{ organizer }}
-    </li>
-    <li>
-      <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-map.svg"/>
-      {{ place }}
-    </li>
-    <li>
-      <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-cal-lg.svg"/>
-      <time :datetime="new Date(date).toISOString().substring(0, 10)">{{
-          new Date(date).toLocaleDateString('en-EN', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })
-        }}
-      </time>
-    </li>
+      <li>
+        <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-user.svg"/>
+        {{ organizer }}
+      </li>
+      <li>
+        <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-map.svg"/>
+        {{ place }}
+      </li>
+      <li>
+        <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-cal-lg.svg"/>
+        <time :datetime="new Date(date).toISOString().substring(0, 10)">{{
+            new Date(date).toLocaleDateString('en-EN', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })
+          }}
+        </time>
+      </li>
     </ul>`,
 });
