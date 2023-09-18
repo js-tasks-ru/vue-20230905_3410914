@@ -1,13 +1,13 @@
 <template>
   <div class="toasts">
-    <div class="toast toast_success">
-      <UiIcon class="toast__icon" icon="check-circle" />
-      <span>Success Toast Example</span>
+    <div class="toast toast_success" v-for="message in successMessages" :key="message.message">
+      <UiIcon class="toast__icon" icon="check-circle"/>
+      <span>{{ message.message }}</span>
     </div>
 
-    <div class="toast toast_error">
-      <UiIcon class="toast__icon" icon="alert-circle" />
-      <span>Error Toast Example</span>
+    <div class="toast toast_error" v-for="message in errorMessages" :key="message.message">
+      <UiIcon class="toast__icon" icon="alert-circle"/>
+      <span>{{ message.message }}</span>
     </div>
   </div>
 </template>
@@ -18,7 +18,38 @@ import UiIcon from './UiIcon.vue';
 export default {
   name: 'TheToaster',
 
-  components: { UiIcon },
+  components: {UiIcon},
+  data() {
+    return {
+      successMessages: [],
+      errorMessages: [],
+    }
+  },
+  mounted() {
+    setInterval(() => {
+      this.filterMessages()
+    }, 100)
+  },
+  methods: {
+    success(message) {
+      this.successMessages.push({
+          message, time: Date.now()
+        }
+      )
+    },
+    error(message) {
+      this.errorMessages.push({
+        message, time: Date.now()
+      })
+    },
+    show(message) {
+      return Date.now() - message.time < 5000
+    },
+    filterMessages() {
+      this.successMessages = this.successMessages.filter((message) => this.show(message))
+      this.errorMessages = this.errorMessages.filter((message) => this.show(message))
+    }
+  },
 };
 </script>
 
@@ -56,7 +87,7 @@ export default {
 }
 
 .toast + .toast {
-  margin-top: 20px;
+  margin-top: 20px;;
 }
 
 .toast__icon {
