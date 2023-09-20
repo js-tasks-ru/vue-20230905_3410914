@@ -5,9 +5,8 @@
       !active ? 'calendar-view__cell_inactive' : '',
       today ? 'calendar-view__cell__current' : ''
       ]"
-    tabindex="0"
-  >
-    <div class="calendar-view__cell-day">{{ date.getUTCDate() }}</div>
+    tabindex="0">
+    <div class="calendar-view__cell-day">{{ date.getDate() }}</div>
     <div class="calendar-view__cell-content">
       <div v-for="meetup in meetups" :key="meetup.id">
         <a :href="`/meetups/${meetup.id}`" class="calendar-event">{{ meetup.title }}</a>

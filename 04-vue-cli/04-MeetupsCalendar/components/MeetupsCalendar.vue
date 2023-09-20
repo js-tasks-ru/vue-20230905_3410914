@@ -2,15 +2,19 @@
   <div class="calendar-view">
     <div class="calendar-view__controls">
       <div class="calendar-view__controls-inner">
-        <button class="calendar-view__control-left" type="button" aria-label="Previous month"
-                @click="prevMonth"></button>
+        <button
+          class="calendar-view__control-left"
+          type="button"
+          aria-label="Previous month"
+          @click="prevMonth">
+        </button>
         <div class="calendar-view__date">{{ titleDate }}</div>
         <button class="calendar-view__control-right" type="button" aria-label="Next month" @click="nextMonth"></button>
       </div>
     </div>
     <div class="calendar-view__grid">
       <div v-for="day in days" :key="day">
-        <CalendarCell :date="day" :currentDate="currentDate" :meetups="getMeetupByDate(day)"/>
+        <CalendarCell :date="day" :currentDate="currentDate" :meetups="getMeetupsByDate(day)"/>
       </div>
     </div>
   </div>
@@ -21,7 +25,9 @@ import CalendarCell from "./CalendarCell";
 
 export default {
   name: 'MeetupsCalendar',
-  components: {CalendarCell},
+  components: {
+    CalendarCell
+  },
 
   props: {
     meetups: {
@@ -37,24 +43,32 @@ export default {
   },
 
   methods: {
-    getMeetupByDate(date) {
+    getMeetupsByDate(date) {
       return this.meetups.filter((meetup) => new Date(meetup.date).toLocaleDateString() === date.toLocaleDateString())
     },
     prevMonth() {
-      this.currentDate = new Date(this.currentDate.setMonth(this.currentDate.getMonth() - 1))
+      this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1, 1)
     },
     nextMonth() {
-      this.currentDate = new Date(this.currentDate.setMonth(this.currentDate.getMonth() + 1))
+      this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 1)
     },
   },
 
   computed: {
     days() {
       let month = [];
-      let start = new Date(this.currentDate)
-      let end = new Date(this.currentDate)
-      start.setDate(start.getDate() - 23)
-      end.setDate(end.getDate() + 11)
+      let start = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1)
+      let d = 0
+
+      if (start.getDay() === 1 && start.getMonth() + 1 === 2 && start.getFullYear() % 4 !== 0) {
+        d = 27  // if February
+      } else {
+        d = 34
+      }
+
+      start.setDate(start.getDate() - start.getDay() + 1)  // set Monday
+      let end = new Date(start)
+      end.setDate(end.getDate() + d)
 
       for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
         month.push(new Date(d))

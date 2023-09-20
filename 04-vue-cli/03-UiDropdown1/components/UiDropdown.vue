@@ -31,7 +31,10 @@ import UiIcon from './UiIcon.vue';
 export default {
   name: 'UiDropdown',
 
-  components: {UiIcon},
+  components: {
+    UiIcon
+  },
+
   props: {
     options: {
       type: Array,
@@ -65,10 +68,10 @@ export default {
 
   computed: {
     currentValue() {
-      return this.$props.options.filter((v) => v.value === this.modelValue)[0]
+      return this.options.filter((v) => v.value === this.modelValue)[0]
     },
     hasIcons() {
-      return this.$props.options.filter((option) => option.icon).length > 0
+      return this.options.filter((option) => option.icon).length > 0
     }
   }
 };

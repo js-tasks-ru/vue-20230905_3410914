@@ -16,17 +16,22 @@ import UiIcon from './UiIcon.vue';
 export default {
   name: 'TheToaster',
 
-  components: {UiIcon},
+  components: {
+    UiIcon
+  },
+
   data() {
     return {
       messages: [],
     }
   },
+
   mounted() {
     setInterval(() => {
       this.filterMessages()
     }, 100)
   },
+
   methods: {
     success(message) {
       this.messages.push(
