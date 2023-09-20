@@ -1,18 +1,25 @@
 <template>
-  <div class="dropdown dropdown_opened">
-    <button type="button" class="dropdown__toggle dropdown__toggle_icon">
-      <UiIcon icon="tv" class="dropdown__icon" />
-      <span>Title</span>
+  <div class="dropdown" :class="opened ? 'dropdown_opened' : ''">
+    <button
+      type="button"
+      class="dropdown__toggle"
+      :class="hasIcons ? 'dropdown__toggle_icon' : ''"
+      @click="toggleOpen"
+    >
+      <UiIcon :icon="currentValue ? currentValue.icon : 'tv'" class="dropdown__icon"/>
+      <span>{{ currentValue ? currentValue.text : title }}</span>
     </button>
-
-    <div class="dropdown__menu" role="listbox">
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 1
-      </button>
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 2
+    <div class="dropdown__menu" role="listbox" v-show="opened">
+      <button
+        class="dropdown__item"
+        :class="hasIcons ? 'dropdown__item_icon' : ''"
+        role="option"
+        type="button"
+        v-for="option in options" :key="option.value"
+        @click="setValue(option)"
+      >
+        <UiIcon :icon="option.icon" class="dropdown__icon"/>
+        {{ option.text }}
       </button>
     </div>
   </div>
@@ -24,7 +31,46 @@ import UiIcon from './UiIcon.vue';
 export default {
   name: 'UiDropdown',
 
-  components: { UiIcon },
+  components: {UiIcon},
+  props: {
+    options: {
+      type: Array,
+      required: true,
+    },
+    modelValue: {
+      type: String
+    },
+    title: {
+      type: String,
+    }
+  },
+
+  data() {
+    return {
+      opened: false,
+    }
+  },
+
+  emits: ['update:modelValue'],
+
+  methods: {
+    setValue(value) {
+      this.toggleOpen()
+      this.$emit('update:modelValue', value.value)
+    },
+    toggleOpen() {
+      this.opened = !this.opened
+    }
+  },
+
+  computed: {
+    currentValue() {
+      return this.$props.options.filter((v) => v.value === this.modelValue)[0]
+    },
+    hasIcons() {
+      return this.$props.options.filter((option) => option.icon).length > 0
+    }
+  }
 };
 </script>
 
