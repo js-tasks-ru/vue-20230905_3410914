@@ -17,6 +17,11 @@ export default {
       required: false
     }
   },
+  computed: {
+    meetupCover() {
+      return this.image ? `url(${this.image})` : 'var(--default-cover)' ;
+    }
+  },
 };
 </script>
 
@@ -25,7 +30,7 @@ export default {
   background-size: cover;
   background-position: center;
   background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-  v-bind("image ? 'url(' + image + ')' : 'var(--default-cover)'");
+  v-bind(meetupCover);
   display: flex;
   flex-direction: column;
   align-items: center;

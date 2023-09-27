@@ -14,7 +14,7 @@
     </div>
     <div class="calendar-view__grid">
       <div v-for="day in days" :key="day">
-        <CalendarCell :date="day" :currentDate="currentDate" :meetups="getMeetupsByDate(day)"/>
+        <CalendarCell :date="day" :chosenDate="currentDate" :meetups="meetupsByDate[day.toLocaleDateString()]"/>
       </div>
     </div>
   </div>
@@ -39,13 +39,11 @@ export default {
   data() {
     return {
       currentDate: new Date(),
+      counter: 0,
     }
   },
 
   methods: {
-    getMeetupsByDate(date) {
-      return this.meetups.filter((meetup) => new Date(meetup.date).toLocaleDateString() === date.toLocaleDateString())
-    },
     prevMonth() {
       this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1, 1)
     },
@@ -58,21 +56,23 @@ export default {
     days() {
       let month = [];
       let start = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1)
-      let d = 0
 
-      if (start.getDay() === 1 && start.getMonth() + 1 === 2 && start.getFullYear() % 4 !== 0) {
-        d = 27  // if February
+      if (start.getDay() === 0) {
+        start.setDate(start.getDate() - start.getDay() - 6)
       } else {
-        d = 34
+        start.setDate(start.getDate() - start.getDay() + 1)
       }
 
-      start.setDate(start.getDate() - start.getDay() + 1)  // set Monday
-      let end = new Date(start)
-      end.setDate(end.getDate() + d)
+      let end = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 0)
+
+      if (end.getDay() !== 0) {
+        end.setDate((end.getDate() - end.getDay() + 7))
+      }
 
       for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
         month.push(new Date(d))
       }
+
       return month;
     },
     titleDate() {
@@ -81,11 +81,22 @@ export default {
         month: 'long',
       })
     },
-  }
+    meetupsByDate() {
+      let meetups = {}
+      for (let meetup of this.meetups) {
+        if (new Date(meetup.date).toLocaleDateString() in meetups) {
+          meetups[new Date(meetup.date).toLocaleDateString()].push(meetup)
+        } else {
+          meetups[new Date(meetup.date).toLocaleDateString()] = [meetup]
+        }
+      }
+      return meetups
+    }
+  },
 };
 </script>
 
-<style>
+<style scoped>
 .calendar-view {
 }
 
@@ -186,7 +197,7 @@ export default {
   }
 }
 
-.calendar-event {
+:deep(.calendar-event) {
   --max-lines: 2;
   --line-height: 16px;
 

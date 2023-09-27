@@ -1,10 +1,7 @@
 <template>
   <div
-    :class="[
-      'calendar-view__cell',
-      !active ? 'calendar-view__cell_inactive' : '',
-      today ? 'calendar-view__cell__current' : ''
-      ]"
+    class="calendar-view__cell"
+    :class="{ 'calendar-view__cell_inactive' : !active, 'calendar-view__cell__current' : today }"
     tabindex="0">
     <div class="calendar-view__cell-day">{{ date.getDate() }}</div>
     <div class="calendar-view__cell-content">
@@ -23,7 +20,7 @@ export default {
     date: {
       type: Date
     },
-    currentDate: {
+    chosenDate: {
       type: Date
     },
     meetups: {
@@ -33,7 +30,7 @@ export default {
 
   computed: {
     active() {
-      return this.date.getMonth() === this.currentDate.getMonth()
+      return this.date.getMonth() === this.chosenDate.getMonth()
     },
     today() {
       return this.date.toDateString() === new Date().toDateString()

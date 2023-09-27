@@ -1,9 +1,9 @@
 <template>
-  <div class="dropdown" :class="opened ? 'dropdown_opened' : ''">
+  <div class="dropdown" :class="{ dropdown_opened: opened}">
     <button
       type="button"
       class="dropdown__toggle"
-      :class="hasIcons ? 'dropdown__toggle_icon' : ''"
+      :class="{ 'dropdown__toggle_icon': hasIcons }"
       @click="toggleOpen"
     >
       <UiIcon :icon="currentValue ? currentValue.icon : 'tv'" class="dropdown__icon"/>
@@ -12,7 +12,7 @@
     <div class="dropdown__menu" role="listbox" v-show="opened">
       <button
         class="dropdown__item"
-        :class="hasIcons ? 'dropdown__item_icon' : ''"
+        :class="{ 'dropdown__item_icon': hasIcons }"
         role="option"
         type="button"
         v-for="option in options" :key="option.value"
@@ -68,10 +68,10 @@ export default {
 
   computed: {
     currentValue() {
-      return this.options.filter((v) => v.value === this.modelValue)[0]
+      return this.options.find((el) => el.value === this.modelValue)
     },
     hasIcons() {
-      return this.options.filter((option) => option.icon).length > 0
+      return this.options.some((el) => el.icon)
     }
   }
 };

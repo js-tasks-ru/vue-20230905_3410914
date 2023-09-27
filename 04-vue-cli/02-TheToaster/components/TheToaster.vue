@@ -1,7 +1,8 @@
 <template>
   <div class="toasts">
     <div
-      :class="message.type === 'success' ? 'toast toast_success' : 'toast toast_error'"
+      class="toast"
+      :class="message.type === 'success' ? 'toast_success' : 'toast_error'"
       v-for="message in messages"
       :key="message.message">
       <UiIcon class="toast__icon" :icon="message.type === 'success' ? 'check-circle' : 'alert-circle'"/>
@@ -23,39 +24,27 @@ export default {
   data() {
     return {
       messages: [],
+      index: 0
     }
-  },
-
-  mounted() {
-    setInterval(() => {
-      this.filterMessages()
-    }, 100)
   },
 
   methods: {
     success(message) {
-      this.messages.push(
-        {
-          message,
-          type: 'success',
-          time: Date.now()
-        }
-      )
+      this.addAlert(message, 'success')
     },
     error(message) {
-      this.messages.push(
-        {
+      this.addAlert(message, 'error')
+    },
+    addAlert(message, type) {
+      this.messages.push({
           message,
-          type: 'error',
-          time: Date.now()
+          type,
+          index: this.index
         }
       )
-    },
-    show(message) {
-      return Date.now() - message.time < 5000
-    },
-    filterMessages() {
-      this.messages = this.messages.filter((message) => this.show(message))
+      let i = this.index
+      setTimeout(() => this.messages = this.messages.filter((el) => el.index !== i), 5000)
+      this.index++
     }
   },
 };
