@@ -6,7 +6,11 @@
       :class="{ 'dropdown__toggle_icon': hasIcons }"
       @click="toggleOpen"
     >
-      <UiIcon :icon="currentValue ? currentValue.icon : null" class="dropdown__icon"/>
+      <UiIcon
+        :icon="currentValue ? currentValue.icon : null"
+        class="dropdown__icon"
+        v-if="currentValue && currentValue.icon"
+      />
       <span>{{ currentValue ? currentValue.text : title }}</span>
     </button>
     <div class="dropdown__menu" role="listbox" v-show="opened">
@@ -18,7 +22,7 @@
         v-for="option in options" :key="option.value"
         @click="setValue(option)"
       >
-        <UiIcon :icon="option.icon" class="dropdown__icon"/>
+        <UiIcon :icon="option.icon" class="dropdown__icon" v-if="option.icon"/>
         {{ option.text }}
       </button>
     </div>
