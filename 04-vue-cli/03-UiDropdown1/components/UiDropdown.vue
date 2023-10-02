@@ -1,18 +1,29 @@
 <template>
-  <div class="dropdown dropdown_opened">
-    <button type="button" class="dropdown__toggle dropdown__toggle_icon">
-      <UiIcon icon="tv" class="dropdown__icon" />
-      <span>Title</span>
+  <div class="dropdown" :class="{ dropdown_opened: opened}">
+    <button
+      type="button"
+      class="dropdown__toggle"
+      :class="{ 'dropdown__toggle_icon': hasIcons }"
+      @click="toggleOpen"
+    >
+      <UiIcon
+        :icon="currentValue ? currentValue.icon : null"
+        class="dropdown__icon"
+        v-if="currentValue && currentValue.icon"
+      />
+      <span>{{ currentValue ? currentValue.text : title }}</span>
     </button>
-
-    <div class="dropdown__menu" role="listbox">
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 1
-      </button>
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 2
+    <div class="dropdown__menu" role="listbox" v-show="opened">
+      <button
+        class="dropdown__item"
+        :class="{ 'dropdown__item_icon': hasIcons }"
+        role="option"
+        type="button"
+        v-for="option in options" :key="option.value"
+        @click="setValue(option)"
+      >
+        <UiIcon :icon="option.icon" class="dropdown__icon" v-if="option.icon"/>
+        {{ option.text }}
       </button>
     </div>
   </div>
@@ -24,7 +35,49 @@ import UiIcon from './UiIcon.vue';
 export default {
   name: 'UiDropdown',
 
-  components: { UiIcon },
+  components: {
+    UiIcon
+  },
+
+  props: {
+    options: {
+      type: Array,
+      required: true,
+    },
+    modelValue: {
+      type: String
+    },
+    title: {
+      type: String,
+    }
+  },
+
+  data() {
+    return {
+      opened: false,
+    }
+  },
+
+  emits: ['update:modelValue'],
+
+  methods: {
+    setValue(value) {
+      this.toggleOpen()
+      this.$emit('update:modelValue', value.value)
+    },
+    toggleOpen() {
+      this.opened = !this.opened
+    }
+  },
+
+  computed: {
+    currentValue() {
+      return this.options.find((el) => el.value === this.modelValue)
+    },
+    hasIcons() {
+      return this.options.some((el) => el.icon)
+    }
+  }
 };
 </script>
 

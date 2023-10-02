@@ -1,13 +1,12 @@
 <template>
   <div class="toasts">
-    <div class="toast toast_success">
-      <UiIcon class="toast__icon" icon="check-circle" />
-      <span>Success Toast Example</span>
-    </div>
-
-    <div class="toast toast_error">
-      <UiIcon class="toast__icon" icon="alert-circle" />
-      <span>Error Toast Example</span>
+    <div
+      class="toast"
+      :class="message.type === 'success' ? 'toast_success' : 'toast_error'"
+      v-for="message in messages"
+      :key="message.message">
+      <UiIcon class="toast__icon" :icon="message.type === 'success' ? 'check-circle' : 'alert-circle'"/>
+      <span>{{ message.message }}</span>
     </div>
   </div>
 </template>
@@ -18,7 +17,36 @@ import UiIcon from './UiIcon.vue';
 export default {
   name: 'TheToaster',
 
-  components: { UiIcon },
+  components: {
+    UiIcon
+  },
+
+  data() {
+    return {
+      messages: [],
+      index: 0
+    }
+  },
+
+  methods: {
+    success(message) {
+      this.addAlert(message, 'success')
+    },
+    error(message) {
+      this.addAlert(message, 'error')
+    },
+    addAlert(message, type) {
+      this.messages.push({
+          message,
+          type,
+          index: this.index
+        }
+      )
+      let i = this.index
+      setTimeout(() => this.messages = this.messages.filter((el) => el.index !== i), 5000)
+      this.index++
+    }
+  },
 };
 </script>
 
