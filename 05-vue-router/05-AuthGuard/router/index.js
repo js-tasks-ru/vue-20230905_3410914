@@ -3,8 +3,10 @@ import { isAuthenticated } from '../services/authService.js';
 
 const router = createRouter({
   history: createWebHistory('/05-vue-router/05-AuthGuard'),
+
   routes: [
     {
+      name: 'index',
       path: '/',
       alias: '/meetups',
       component: () => import('../views/PageMeetups.vue'),
@@ -39,5 +41,21 @@ const router = createRouter({
     },
   ],
 });
-
+router.beforeEach(async (to) => {
+  if (!isAuthenticated() && !!to.meta.requireGuest) {
+    return true
+  }
+  if (isAuthenticated() && !!to.meta.requireAuth) {
+    return true
+  }
+  if (to.meta.requireGuest) {
+    return '/'
+  }
+  if (to.meta.requireAuth) {
+    return `/login?from=${to.path}`
+  }
+  if (to.path !== '/') {
+    return '/'
+  }
+})
 export { router };
