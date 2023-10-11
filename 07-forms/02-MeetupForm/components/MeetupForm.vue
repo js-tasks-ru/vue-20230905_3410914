@@ -1,5 +1,4 @@
 <template>
-  {{ localMeetup }}
   <form class="meetup-form" @submit.prevent="submit">
     <div class="meetup-form__content">
       <fieldset class="meetup-form__section">
