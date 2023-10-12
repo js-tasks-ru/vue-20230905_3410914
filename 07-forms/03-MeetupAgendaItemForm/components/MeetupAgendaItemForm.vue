@@ -4,39 +4,40 @@
       <UiIcon icon="trash"/>
     </button>
     <UiFormGroup>
-      <UiDropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" v-model="type"/>
+      <UiDropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" v-model="localAgendaItem.type"/>
     </UiFormGroup>
 
     <div class="agenda-item-form__row">
       <div class="agenda-item-form__col">
         <UiFormGroup label="Начало">
-          <UiInput type="time" placeholder="00:00" name="startsAt" v-model="startsAt"/>
+          <UiInput type="time" placeholder="00:00" name="startsAt" v-model="localAgendaItem.startsAt"/>
         </UiFormGroup>
       </div>
       <div class="agenda-item-form__col">
         <UiFormGroup label="Окончание">
-          <UiInput type="time" placeholder="00:00" name="endsAt" v-model="endsAt"/>
+          <UiInput type="time" placeholder="00:00" name="endsAt" v-model="localAgendaItem.endsAt"/>
         </UiFormGroup>
       </div>
     </div>
 
     <UiFormGroup label="Тема" v-if="isTalk">
-      <UiInput name="title" v-model="title"/>
+      <UiInput name="title" v-model="localAgendaItem.title"/>
     </UiFormGroup>
     <UiFormGroup label="Докладчик" v-if="isTalk">
-      <UiInput name="speaker" v-model="speaker"/>
+      <UiInput name="speaker" v-model="localAgendaItem.speaker"/>
     </UiFormGroup>
     <UiFormGroup label="Заголовок" v-if="isOther">
-      <UiInput name="title" v-model="title"/>
+      <UiInput name="title" v-model="localAgendaItem.title"/>
     </UiFormGroup>
     <UiFormGroup label="Описание" v-if="isTalk || isOther">
-      <UiInput multiline name="description" v-model="description"/>
+      <UiInput multiline name="description" v-model="localAgendaItem.description"/>
     </UiFormGroup>
     <UiFormGroup label="Язык" v-if="isTalk">
-      <UiDropdown title="Язык" :options="$options.talkLanguageOptions" name="language" v-model="language"/>
+      <UiDropdown title="Язык" :options="$options.talkLanguageOptions" name="language"
+                  v-model="localAgendaItem.language"/>
     </UiFormGroup>
     <UiFormGroup label="Нестандартный текст (необязательно)" v-if="!isTalk && !isOther">
-      <UiInput name="title" v-model="title"/>
+      <UiInput name="title" v-model="localAgendaItem.title"/>
     </UiFormGroup>
   </fieldset>
 </template>
@@ -101,13 +102,6 @@ export default {
 
   data() {
     return {
-      title: null,
-      speaker: null,
-      description: null,
-      language: null,
-      type: undefined,
-      startsAt: null,
-      endsAt: null,
       localAgendaItem: null,
     }
   },
@@ -125,65 +119,47 @@ export default {
 
   computed: {
     isTalk() {
-      return this.type === 'talk'
+      return this.localAgendaItem.type === 'talk'
     },
     isOther() {
-      return this.type === 'other'
+      return this.localAgendaItem.type === 'other'
     },
   },
 
   watch: {
-    type(value) {
-      this.updateAgendaItem('type', value)
+    localAgendaItem: {
+      deep: true,
+      handler(newValue, oldValue) {
+        if (!oldValue) {
+          return
+        }
+        this.$emit('update:agendaItem', newValue)
+      }
     },
 
-    startsAt(value) {
-      let [h, m] = this.localAgendaItem.startsAt.split(':').map((el) => parseInt(el))
-      let startsAtMinutes = h * 60 + m;
-      [h, m] = this.localAgendaItem.endsAt.split(':').map((el) => parseInt(el))
-      let endsAtMinutes = h * 60 + m;
-      [h, m] = value.split(':').map((el) => parseInt(el))
-      let startsAtNowMinutes = h * 60 + m
-      let delta = endsAtMinutes - startsAtMinutes
-      endsAtMinutes = startsAtNowMinutes + delta
-      h = ~~(endsAtMinutes / 60)
-      m = endsAtMinutes - (h * 60)
-      h = h >= 24 ? h - 24 : h
-      this.endsAt = `0${h}`.slice(-2) + ':' + `0${m}`.slice(-2)
-      this.updateAgendaItem('startsAt', value)
-      this.updateAgendaItem('endsAt', this.endsAt)
-    },
-
-    endsAt(value) {
-      this.updateAgendaItem('endsAt', value)
-    },
-
-    title(value) {
-      this.updateAgendaItem('title', value)
-    },
-
-    speaker(value) {
-      this.updateAgendaItem('speaker', value)
-    },
-
-    description(value) {
-      this.updateAgendaItem('description', value)
-    },
-
-    language(value) {
-      this.updateAgendaItem('language', value)
+    'localAgendaItem.startsAt': {
+      handler(newValue, oldValue) {
+        if (!oldValue) {
+          return
+        }
+        let [h, m] = oldValue.split(':').map((el) => parseInt(el))
+        let startsAtMinutes = h * 60 + m;
+        [h, m] = this.localAgendaItem.endsAt.split(':').map((el) => parseInt(el))
+        let endsAtMinutes = h * 60 + m;
+        [h, m] = newValue.split(':').map((el) => parseInt(el))
+        let startsAtNowMinutes = h * 60 + m
+        let delta = endsAtMinutes - startsAtMinutes
+        endsAtMinutes = startsAtNowMinutes + delta
+        h = ~~(endsAtMinutes / 60)
+        m = endsAtMinutes - h * 60
+        h = h >= 24 ? h - 24 : h
+        this.localAgendaItem.endsAt = `0${h}`.slice(-2) + ':' + `0${m}`.slice(-2)
+      }
     },
   },
 
-  mounted() {
+  created() {
     this.localAgendaItem = JSON.parse(JSON.stringify(this.agendaItem))
-    this.type = this.localAgendaItem.type
-    this.title = this.localAgendaItem.title
-    this.description = this.localAgendaItem.description
-    this.language = this.localAgendaItem.language
-    this.speaker = this.localAgendaItem.speaker
-    this.startsAt = this.localAgendaItem.startsAt
-    this.endsAt = this.localAgendaItem.endsAt
   }
 };
 </script>

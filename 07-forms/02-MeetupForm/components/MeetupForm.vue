@@ -29,14 +29,12 @@
       </fieldset>
 
       <h3 class="meetup-form__agenda-title">Программа</h3>
-      <div v-for="agendaItem in localMeetup.agenda" :key="agendaItem.id" v-if="localMeetup.agenda?.length">
-        <meetup-agenda-item-form
+        <meetup-agenda-item-form v-for="(agendaItem, index) in localMeetup.agenda" :key="agendaItem.id"
           :agenda-item="agendaItem"
           class="meetup-form__agenda-item"
-          @update:agendaItem="updateAgendaItem(agendaItem.id, $event)"
+          @update:agendaItem="updateAgendaItem($event, index)"
           @remove="removeAgendaItem(agendaItem.id)"
         />
-      </div>
 
       <div class="meetup-form__append">
         <button
@@ -133,12 +131,8 @@ export default {
     cancel() {
       this.$emit('cancel')
     },
-    updateAgendaItem(id, event) {
-      this.localMeetup.agenda.forEach((el, index, arr) => {
-        if (el.id === id) {
-          arr[index] = event
-        }
-      })
+    updateAgendaItem(event, index) {
+      this.localMeetup.agenda[index] = event
     },
     removeAgendaItem(id) {
       this.localMeetup.agenda = this.localMeetup.agenda.filter((el) => el.id !== id)

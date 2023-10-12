@@ -1,5 +1,5 @@
 <template>
-  <button @click="increaseCounter">{{ count || counter }}</button>
+  <button @click="increaseCounter">{{ counter }}</button>
 </template>
 
 
@@ -20,15 +20,20 @@ export default {
     }
   },
 
-  methods: {
-    increaseCounter() {
-      this.counter++
-      this.$emit('update:count', this.counter)
+  watch: {
+    count() {
+      this.counter = this.count
     }
   },
 
-  mounted() {
-    this.counter = this.count
+  methods: {
+    increaseCounter() {
+      this.$emit('update:count', ++this.counter)
+    }
+  },
+
+  created() {
+    this.counter = typeof this.count === 'number' ? this.count : 0
   }
 };
 </script>

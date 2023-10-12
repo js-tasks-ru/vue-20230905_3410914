@@ -69,9 +69,9 @@ const agendaItemTypeOptions = Object.entries(agendaItemDefaultTitles).map(([type
 }));
 
 const talkLanguageOptions = [
-  {value: null, text: 'Не указано'},
-  {value: 'RU', text: 'RU'},
-  {value: 'EN', text: 'EN'},
+  { value: null, text: 'Не указано' },
+  { value: 'RU', text: 'RU' },
+  { value: 'EN', text: 'EN' },
 ];
 
 /**
@@ -193,20 +193,21 @@ export default {
 
     'localAgendaItem.startsAt': {
       handler(newValue, oldValue) {
-        if (oldValue) {
-          let [h, m] = oldValue.split(':').map((el) => parseInt(el))
-          let startsAtMinutes = h * 60 + m;
-          [h, m] = this.localAgendaItem.endsAt.split(':').map((el) => parseInt(el))
-          let endsAtMinutes = h * 60 + m;
-          [h, m] = newValue.split(':').map((el) => parseInt(el))
-          let startsAtNowMinutes = h * 60 + m
-          let delta = endsAtMinutes - startsAtMinutes
-          endsAtMinutes = startsAtNowMinutes + delta
-          h = ~~(endsAtMinutes / 60)
-          m = endsAtMinutes - (h * 60)
-          h = h >= 24 ? h - 24 : h
-          this.localAgendaItem.endsAt = `0${h}`.slice(-2) + ':' + `0${m}`.slice(-2)
+        if (!oldValue) {
+          return
         }
+        let [h, m] = oldValue.split(':').map((el) => parseInt(el))
+        let startsAtMinutes = h * 60 + m;
+        [h, m] = this.localAgendaItem.endsAt.split(':').map((el) => parseInt(el))
+        let endsAtMinutes = h * 60 + m;
+        [h, m] = newValue.split(':').map((el) => parseInt(el))
+        let startsAtNowMinutes = h * 60 + m
+        let delta = endsAtMinutes - startsAtMinutes
+        endsAtMinutes = startsAtNowMinutes + delta
+        h = ~~(endsAtMinutes / 60)
+        m = endsAtMinutes - h * 60
+        h = h >= 24 ? h - 24 : h
+        this.localAgendaItem.endsAt = `0${h}`.slice(-2) + ':' + `0${m}`.slice(-2)
       }
     },
   },
