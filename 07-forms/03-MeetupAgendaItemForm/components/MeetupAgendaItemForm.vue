@@ -1,40 +1,47 @@
 <template>
   <fieldset class="agenda-item-form">
-    <button type="button" class="agenda-item-form__remove-button">
-      <UiIcon icon="trash" />
+    <button type="button" class="agenda-item-form__remove-button" @click="remove">
+      <UiIcon icon="trash"/>
     </button>
-
     <UiFormGroup>
-      <UiDropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
+      <UiDropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" v-model="localAgendaItem.type"/>
     </UiFormGroup>
 
     <div class="agenda-item-form__row">
       <div class="agenda-item-form__col">
         <UiFormGroup label="Начало">
-          <UiInput type="time" placeholder="00:00" name="startsAt" />
+          <UiInput type="time" placeholder="00:00" name="startsAt" v-model="localAgendaItem.startsAt"/>
         </UiFormGroup>
       </div>
       <div class="agenda-item-form__col">
         <UiFormGroup label="Окончание">
-          <UiInput type="time" placeholder="00:00" name="endsAt" />
+          <UiInput type="time" placeholder="00:00" name="endsAt" v-model="localAgendaItem.endsAt"/>
         </UiFormGroup>
       </div>
     </div>
 
-    <UiFormGroup label="Тема">
-      <UiInput name="title" />
+    <UiFormGroup label="Тема" v-if="isTalk">
+      <UiInput name="title" v-model="localAgendaItem.title"/>
     </UiFormGroup>
-    <UiFormGroup label="Докладчик">
-      <UiInput name="speaker" />
+    <UiFormGroup label="Докладчик" v-if="isTalk">
+      <UiInput name="speaker" v-model="localAgendaItem.speaker"/>
     </UiFormGroup>
-    <UiFormGroup label="Описание">
-      <UiInput multiline name="description" />
+    <UiFormGroup label="Заголовок" v-if="isOther">
+      <UiInput name="title" v-model="localAgendaItem.title"/>
     </UiFormGroup>
-    <UiFormGroup label="Язык">
-      <UiDropdown title="Язык" :options="$options.talkLanguageOptions" name="language" />
+    <UiFormGroup label="Описание" v-if="isTalk || isOther">
+      <UiInput multiline name="description" v-model="localAgendaItem.description"/>
+    </UiFormGroup>
+    <UiFormGroup label="Язык" v-if="isTalk">
+      <UiDropdown title="Язык" :options="$options.talkLanguageOptions" name="language"
+                  v-model="localAgendaItem.language"/>
+    </UiFormGroup>
+    <UiFormGroup label="Нестандартный текст (необязательно)" v-if="!isTalk && !isOther">
+      <UiInput name="title" v-model="localAgendaItem.title"/>
     </UiFormGroup>
   </fieldset>
 </template>
+
 
 <script>
 import UiIcon from './UiIcon.vue';
@@ -90,8 +97,73 @@ export default {
       required: true,
     },
   },
+
+  emits: ['update:agendaItem', 'remove'],
+
+  data() {
+    return {
+      localAgendaItem: null,
+    }
+  },
+
+  methods: {
+    updateAgendaItem(key, value) {
+      this.localAgendaItem[key] = value
+      this.$emit('update:agendaItem', this.localAgendaItem)
+    },
+
+    remove() {
+      this.$emit('remove')
+    },
+  },
+
+  computed: {
+    isTalk() {
+      return this.localAgendaItem.type === 'talk'
+    },
+    isOther() {
+      return this.localAgendaItem.type === 'other'
+    },
+  },
+
+  watch: {
+    localAgendaItem: {
+      deep: true,
+      handler(newValue, oldValue) {
+        if (!oldValue) {
+          return
+        }
+        this.$emit('update:agendaItem', newValue)
+      }
+    },
+
+    'localAgendaItem.startsAt': {
+      handler(newValue, oldValue) {
+        if (!oldValue) {
+          return
+        }
+        let [h, m] = oldValue.split(':').map((el) => parseInt(el))
+        let startsAtMinutes = h * 60 + m;
+        [h, m] = this.localAgendaItem.endsAt.split(':').map((el) => parseInt(el))
+        let endsAtMinutes = h * 60 + m;
+        [h, m] = newValue.split(':').map((el) => parseInt(el))
+        let startsAtNowMinutes = h * 60 + m
+        let delta = endsAtMinutes - startsAtMinutes
+        endsAtMinutes = startsAtNowMinutes + delta
+        h = ~~(endsAtMinutes / 60)
+        m = endsAtMinutes - h * 60
+        h = h >= 24 ? h - 24 : h
+        this.localAgendaItem.endsAt = `0${h}`.slice(-2) + ':' + `0${m}`.slice(-2)
+      }
+    },
+  },
+
+  created() {
+    this.localAgendaItem = JSON.parse(JSON.stringify(this.agendaItem))
+  }
 };
 </script>
+
 
 <style scoped>
 .agenda-item-form {
