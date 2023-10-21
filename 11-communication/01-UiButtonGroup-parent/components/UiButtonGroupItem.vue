@@ -1,5 +1,12 @@
 <template>
-  <button class="button-group__button button-group__button_active" type="button" aria-selected="false">Button</button>
+  <button
+    :class="['button-group__button', { 'button-group__button_active' : value === $parent.modelValue }]"
+    type="button"
+    aria-selected="false"
+    @click="select(value)"
+  >
+    <slot/>
+  </button>
 </template>
 
 <script>
@@ -11,6 +18,21 @@ export default {
       required: true,
     },
   },
+
+  mounted() {
+    if (this.$parent.$options.name !== 'aUiButtonGroup') {
+      console.warn(
+        `${this.$options.name} was mounted by wrong component (${this.$parent.$options.name}).
+        Can only be used with UiButtonGroup.`
+      )
+    }
+  },
+
+  methods: {
+    select(value) {
+      this.$parent.select(value)
+    }
+  }
 };
 </script>
 
