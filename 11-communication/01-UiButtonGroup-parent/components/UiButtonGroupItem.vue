@@ -20,7 +20,7 @@ export default {
   },
 
   mounted() {
-    if (this.$parent.$options.name !== 'aUiButtonGroup') {
+    if (this.$parent.$options.name !== 'UiButtonGroup') {
       console.warn(
         `${this.$options.name} was mounted by wrong component (${this.$parent.$options.name}).
         Can only be used with UiButtonGroup.`
