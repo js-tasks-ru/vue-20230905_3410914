@@ -1,6 +1,6 @@
 <template>
-  <div class="pagination-container" v-for="item in paginatedItems">
-    <slot :item="item"/>
+  <div class="pagination-container">
+    <slot :item="item" v-for="item in paginatedItems"/>
   </div>
 </template>
 
